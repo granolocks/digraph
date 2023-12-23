@@ -1,4 +1,5 @@
 samples/*
 digraph-rs
 digraph.out
-digraph.png
+*.digraph.png
+/target
