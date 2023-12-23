@@ -10,5 +10,5 @@ data.each_with_index{|row, row_id|
     png[row_id, col_id] = ChunkyPNG::Color.rgba(col, col, col, 255);
   }
 }
-png.save('filename.png', :interlace => false)
+png.save('digraph.png', :interlace => false)
 
