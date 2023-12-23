@@ -38,26 +38,37 @@ impl Digraph {
             base_name: base_name
         }
     }
+
+    pub fn generate_png(&self) {
+        let mut outfile = String::new();
+        outfile.extend(self.base_name.chars());
+        outfile.extend(".digraph.png".chars());
+        let mut img: RgbImage = ImageBuffer::new(256, 256);
+
+        for (x, y, pixel) in img.enumerate_pixels_mut() {
+            let i = self.intensities[y as usize][x as usize];
+            *pixel = image::Rgb([i, i, i]);
+        }
+
+        match img.save(&outfile) {
+            Ok(_)  => println!("Saved image {outfile}"),
+            Err(_) => eprintln!("Couldn't save image {outfile}")
+        }
+    }
 }
 
 fn usage(args: Vec<String>) {
     eprintln!("Usage: {} <file to visualize>", args[0]);
 }
 
-fn make_png(digraph: &Digraph) {
-    let mut outfile = String::new();
-    outfile.extend(digraph.base_name.chars());
-    outfile.extend(".digraph.png".chars());
-    let mut img: RgbImage = ImageBuffer::new(256, 256);
-
-    for (x, y, pixel) in img.enumerate_pixels_mut() {
-        let i = digraph.intensities[y as usize][x as usize];
-        *pixel = image::Rgb([i, i, i]);
-    }
-
-    match img.save(&outfile) {
-        Ok(_)  => println!("Saved image {outfile}"),
-        Err(_) => eprintln!("Couldn't save image {outfile}")
+fn read_file_to_bytes(filepath: &Path) -> Option<Vec<u8>> {
+    if let Ok(_) = File::open(&filepath) {
+        let mut buffer:Vec<u8> = Vec::new();
+        buffer.extend(fs::read(&filepath).ok()?);
+        Some(buffer)
+    } else {
+        eprintln!("Couldn't open file: {}", &filepath.display());
+        None
     }
 }
 
@@ -65,18 +76,17 @@ fn main() -> io::Result<()> {
     let args: Vec<String> = env::args().collect();
 
     if args.len() == 2 {
-        let file_path = Path::new(&args[1]);
-        if let Ok(_) = File::open(&file_path) {
-            let filename = file_path.file_name().unwrap().to_str().unwrap();
-            let mut buffer:Vec<u8> = Vec::new();
-            buffer.extend(fs::read(&file_path)?);
-
-            let digraph = Digraph::new(String::from(filename), &buffer);
-            make_png(&digraph);
-
-        } else {
-            eprintln!("Couldn't open file: {}", file_path.display());
-        };
+        let filepath = Path::new(&args[1]);
+        match read_file_to_bytes(&filepath) {
+            Some(buffer) => {
+                let filename = filepath.file_name().unwrap().to_str().unwrap();
+                let digraph = Digraph::new(String::from(filename), &buffer);
+                digraph.generate_png();
+            },
+            None => {
+                usage(args);
+            }
+        }
     } else {
         usage(args);
     };
