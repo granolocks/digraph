@@ -1,6 +1,6 @@
 # Digraph Toy
 
-![ls digraph](./ls-binary.png)
+![sample outputs](./sample.png)
 
 The goal of this is to explore generating digraph images in rust. An arbitrary
 file is read into a byte buffer and then iterated across in pairs.  Each
