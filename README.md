@@ -1,4 +1,4 @@
-# `digraph.rs`
+# Digraph Toy
 
 ![ls digraph](./ls-binary.png)
 
