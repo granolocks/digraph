@@ -78,9 +78,9 @@ impl Digraph {
     /// combine the basefile num where our bytes came from with the 
     /// IMG_EXT to form the extension for the output png
     fn get_output_filename(&self) -> String {
-        let mut outfile = self.base_name.clone();
+        let mut outfile:String = self.base_name.clone();
         outfile.extend(IMG_EXT.chars());
-        String::from(outfile)
+        outfile
     }
 
     /// Generate a png file from the computed intensities
