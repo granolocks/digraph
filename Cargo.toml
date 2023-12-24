@@ -10,4 +10,4 @@ image = "0.24.7"
 
 [[bin]]
 name = "digraph-rs"
-path = "main.rs"
+path = "src/main.rs"
