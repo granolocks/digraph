@@ -2,10 +2,13 @@ use image::{ImageBuffer, RgbImage};
 
 /// Dimensions of the byte space as well as the dimensions of the digraph matrix
 /// and resultant output png.
-pub const SCALE : usize = 256;
+const SCALE: usize = 256;
 
 /// File extension to append to whatever the original filename we received was
-pub const IMG_EXT : &str = ".digraph.png";
+const IMG_EXT: &str = ".digraph.png";
+
+/// upper limit for the intensity values for a pixel
+const INTENSITY_MAX_F: f64 = 255.0;
 
 /// Struct to hold info about the Digraph we are building
 pub struct Digraph {
@@ -34,7 +37,7 @@ impl Digraph {
         let mut max:usize = 0;
 
         // iterate through the buffer skipping the last element since it has 
-        // no preceding byte
+        // no following byte
         for id in 0..(buffer.len() - 1) {
 
             // x is the byte, y is the next byte. these are the coordinates
@@ -42,7 +45,7 @@ impl Digraph {
             let x  = buffer[id];
             let y = buffer[id+1];
 
-            //increment and update max if needed
+            // increment and update max if needed
             let new_val = counts[usize::from(y)][usize::from(x)] + 1;
             if new_val > max {
                 max = new_val;
@@ -59,10 +62,9 @@ impl Digraph {
         let mut intensities = vec![vec![0;SCALE];SCALE];
         for row in 0..SCALE {
             for col in 0..SCALE {
-
                 // normalize each count and then convert back into a relative 
                 // u8 value to use as color intensity
-                intensities[row][col] = ((counts[row][col] as f64).log(max) * 255.0) as u8;
+                intensities[row][col] = ((counts[row][col] as f64).log(max) * INTENSITY_MAX_F) as u8;
             }
         }
 
@@ -73,6 +75,8 @@ impl Digraph {
         }
     }
 
+    /// combine the basefile num where our bytes came from with the 
+    /// IMG_EXT to form the extension for the output png
     fn get_output_filename(&self) -> String {
         let mut outfile = self.base_name.clone();
         outfile.extend(IMG_EXT.chars());
