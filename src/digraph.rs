@@ -4,6 +4,9 @@ use image::{ImageBuffer, RgbImage};
 /// and resultant output png.
 pub const SCALE : usize = 256;
 
+/// File extension to append to whatever the original filename we received was
+pub const IMG_EXT : &str = ".digraph.png";
+
 /// Struct to hold info about the Digraph we are building
 pub struct Digraph {
 
@@ -15,6 +18,7 @@ pub struct Digraph {
     /// Name of the original processed file which will be used to create the name
     /// of the output PNG
     base_name: String
+
 }
 
 impl Digraph {
@@ -69,11 +73,15 @@ impl Digraph {
         }
     }
 
+    fn get_output_filename(&self) -> String {
+        let mut outfile = self.base_name.clone();
+        outfile.extend(IMG_EXT.chars());
+        String::from(outfile)
+    }
+
     /// Generate a png file from the computed intensities
     pub fn generate_png(&self) {
-        let mut outfile = String::new();
-        outfile.extend(self.base_name.chars());
-        outfile.extend(".digraph.png".chars());
+        let outfile : String = self.get_output_filename();
         let mut img: RgbImage = ImageBuffer::new(SCALE as u32, SCALE as u32);
 
         // set computed relative frequencies into pixels
